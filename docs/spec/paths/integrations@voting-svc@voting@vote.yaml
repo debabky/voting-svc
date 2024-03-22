@@ -1,0 +1,41 @@
+post:
+  tags:
+    - Voting
+  summary: Vote
+  operationId: vote
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - data
+          properties:
+            data:
+              type: object
+              required:
+                - voting_id
+                - voting_option
+                - nullifier
+              properties:
+                voting_id:
+                  type: string
+                voting_option:
+                  type: integer
+                nullifier:
+                  type: string
+  responses:
+    '200':
+      description: Success
+    '500':
+      description: Internal Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+    '400':
+      description: Bad Request Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'

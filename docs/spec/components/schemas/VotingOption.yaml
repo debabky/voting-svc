@@ -1,0 +1,22 @@
+allOf:
+  - $ref: '#/components/schemas/VotingOptionKey'
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - voting_id
+          - name
+          - votes_number
+        properties:
+          voting_id:
+            type: string
+            format: uuid.UUID
+          name:
+            type: string
+          description:
+            type: string
+          votes_number:
+            type: integer

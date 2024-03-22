@@ -1,0 +1,32 @@
+get:
+  tags:
+    - Voting
+  summary: Get Votings
+  operationId: voting
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                $ref: '#/components/schemas/Voting'
+              included:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VotingOption'
+    '500':
+      description: Internal Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'
+    '400':
+      description: Bad Request Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Errors'

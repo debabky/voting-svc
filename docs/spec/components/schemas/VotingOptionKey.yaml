@@ -1,0 +1,12 @@
+type: object
+required:
+  - id
+  - type
+properties:
+  id:
+    type: string
+    format: uuid.UUID
+  type:
+    type: string
+    enum:
+      - voting_options

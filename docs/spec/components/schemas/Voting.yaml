@@ -1,0 +1,35 @@
+allOf:
+  - $ref: '#/components/schemas/VotingKey'
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        required:
+          - name
+          - description
+          - created_at
+        properties:
+          name:
+            type: string
+          description:
+            type: string
+          created_at:
+            type: string
+            format: time.Time
+      relationships:
+        type: object
+        required:
+          - voting_options
+        properties:
+          voting_options:
+            type: object
+            description: The voting options
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VotingOptionKey'
