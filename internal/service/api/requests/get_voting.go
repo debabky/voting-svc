@@ -11,7 +11,8 @@ import (
 
 type GetVotingRequest struct {
 	ID             uuid.UUID
-	IncludeOptions bool `include:"options"`
+	IncludeOptions bool    `include:"options"`
+	Nullifier      *string `url:"nullifier"`
 }
 
 func NewGetVotingRequest(r *http.Request) (GetVotingRequest, error) {

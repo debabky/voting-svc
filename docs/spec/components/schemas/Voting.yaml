@@ -22,18 +22,11 @@ allOf:
           active_until:
             type: string
             format: time.Time
-      relationships:
-        type: object
-        required:
-          - voting_options
-        properties:
-          voting_options:
-            type: object
-            description: The voting options
-            required:
-              - data
-            properties:
-              data:
-                type: array
-                items:
-                  $ref: '#/components/schemas/VotingOptionKey'
+          options:
+            type: array
+            items:
+              $ref: '#/components/schemas/VotingOption'
+          votes:
+            type: array
+            items:
+              $ref: '#/components/schemas/Vote'

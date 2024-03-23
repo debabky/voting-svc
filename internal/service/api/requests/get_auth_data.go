@@ -12,13 +12,13 @@ type GetAuthDataRequest struct {
 	ID uuid.UUID
 }
 
-func NewGetAuthDataRequest(r *http.Request) (GetVotingRequest, error) {
-	var request GetVotingRequest
+func NewGetAuthDataRequest(r *http.Request) (GetAuthDataRequest, error) {
+	var request GetAuthDataRequest
 
 	rawID := chi.URLParam(r, "id")
 	id, err := uuid.Parse(rawID)
 	if err != nil {
-		return GetVotingRequest{}, errors.Wrap(err, "failed to parse UUID")
+		return GetAuthDataRequest{}, errors.Wrap(err, "failed to parse UUID")
 	}
 	request.ID = id
 

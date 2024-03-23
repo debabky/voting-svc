@@ -21,6 +21,8 @@ func (s *service) run() error {
 	s.log.Info("Service started")
 	r := s.router()
 
+	// TODO clear expired verification requests
+
 	if err := s.copus.RegisterChi(r); err != nil {
 		return errors.Wrap(err, "cop failed")
 	}

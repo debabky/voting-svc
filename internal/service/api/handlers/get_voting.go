@@ -7,6 +7,7 @@ import (
 	"github.com/debabky/voting-svc/internal/data"
 	"github.com/debabky/voting-svc/internal/service/api/requests"
 	"github.com/debabky/voting-svc/resources"
+	"github.com/google/uuid"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 )
@@ -47,7 +48,6 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	included := resources.Included{}
 	if req.IncludeOptions {
 		options, err := MasterQ(r).VotingOptionsQ().New().
 			FilterBy("voting_id", voting.ID).
@@ -57,6 +57,8 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 			ape.RenderErr(w, problems.InternalError())
 			return
 		}
+
+		optionsToAdd := make([]resources.VotingOption, 0)
 		for _, option := range options {
 			votes, err := MasterQ(r).VotesQ().New().
 				FilterBy("voting_id", option.VotingID).
@@ -82,7 +84,7 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			included.Add(&resources.VotingOption{
+			optionsToAdd = append(optionsToAdd, resources.VotingOption{
 				Key: resources.Key{
 					ID:   option.Name,
 					Type: resources.VOTING_OPTIONS,
@@ -96,8 +98,27 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 				},
 			})
 		}
+		response.Data.Attributes.Options = &optionsToAdd
+	}
 
-		response.Included = included
+	if req.Nullifier != nil && TokenClaims(r).Nullifier != "" && TokenClaims(r).VotingID != uuid.Nil {
+		votes, err := MasterQ(r).VotesQ().New().
+			FilterBy("nullifier", TokenClaims(r).Nullifier).
+			FilterBy("voting_id", TokenClaims(r).VotingID).
+			Select()
+		if err != nil {
+			Log(r).WithError(err).Error("failed to get votes")
+			return
+		}
+
+		votesToAdd := make([]resources.Vote, 0)
+		for _, vote := range votes {
+			votesToAdd = append(votesToAdd, resources.Vote{
+				VotingOption: vote.VotingOption,
+				Rank:         vote.Rank,
+			})
+		}
+		response.Data.Attributes.Votes = &votesToAdd
 	}
 
 	ape.Render(w, response)

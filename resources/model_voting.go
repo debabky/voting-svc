@@ -6,8 +6,7 @@ package resources
 
 type Voting struct {
 	Key
-	Attributes    VotingAttributes     `json:"attributes"`
-	Relationships *VotingRelationships `json:"relationships,omitempty"`
+	Attributes VotingAttributes `json:"attributes"`
 }
 type VotingResponse struct {
 	Data     Voting   `json:"data"`

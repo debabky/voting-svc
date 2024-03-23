@@ -1,7 +1,7 @@
+description: 'Vote'
 type: object
 required:
   - voting_option
-  - rank
 properties:
   voting_option:
     type: string
