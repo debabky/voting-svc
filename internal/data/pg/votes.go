@@ -3,6 +3,7 @@ package pg
 import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/debabky/voting-svc/internal/data"
+	"github.com/fatih/structs"
 	"gitlab.com/distributed_lab/kit/pgdb"
 )
 
@@ -29,6 +30,13 @@ type votesQ struct {
 
 func (q *votesQ) New() data.VotesQ {
 	return NewVotesQ(q.db.Clone())
+}
+
+func (q *votesQ) Insert(value data.Vote) error {
+	clauses := structs.Map(value)
+	stmt := sq.Insert(votesTableName).SetMap(clauses)
+	err := q.db.Exec(stmt)
+	return err
 }
 
 func (q *votesQ) FilterBy(column string, value any) data.VotesQ {

@@ -1,10 +1,11 @@
 -- +migrate Up
 
 create table votings(
-    id          uuid                     primary key default gen_random_uuid(),
-    name        text                        not null,
-    description text                        not null,
-    created_at  timestamp without time zone not null default now()
+    id           uuid                     primary key default gen_random_uuid(),
+    name         text                        not null,
+    description  text                        not null,
+    created_at   timestamp without time zone not null default now(),
+    active_until timestamp without time zone not null
 );
 
 create table voting_options(
@@ -12,6 +13,12 @@ create table voting_options(
     voting_id    uuid    not null,
     description  text,
     primary key (name, voting_id)
+);
+
+create table registrations(
+    voting_id uuid not null,
+    nullifier text not null,
+    primary key (voting_id, nullifier)
 );
 
 create table votes(

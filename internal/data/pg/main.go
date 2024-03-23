@@ -33,6 +33,10 @@ func (m *masterQ) VotingOptionsQ() data.VotingOptionsQ {
 	return NewVotingOptionsQ(m.db)
 }
 
+func (m *masterQ) RegistrationsQ() data.RegistrationsQ {
+	return NewRegistrationsQ(m.db)
+}
+
 func (m *masterQ) VotesQ() data.VotesQ {
 	return NewVotesQ(m.db)
 }

@@ -13,5 +13,5 @@ type VotingOptionsQ interface {
 type VotingOption struct {
 	Name        string    `db:"name" structs:"name"`
 	VotingID    uuid.UUID `db:"voting_id" structs:"voting_id"`
-	Description string    `db:"description" structs:"description"`
+	Description *string   `db:"description" structs:"description"`
 }

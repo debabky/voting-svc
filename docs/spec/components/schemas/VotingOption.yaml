@@ -9,7 +9,6 @@ allOf:
         required:
           - voting_id
           - name
-          - votes_number
         properties:
           voting_id:
             type: string
@@ -18,5 +17,3 @@ allOf:
             type: string
           description:
             type: string
-          votes_number:
-            type: integer

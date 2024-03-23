@@ -12,7 +12,7 @@ post:
             - data
           properties:
             data:
-              type: object
+              type: object # TODO array for ranked votings
               required:
                 - voting_id
                 - voting_option
@@ -21,9 +21,11 @@ post:
                 voting_id:
                   type: string
                 voting_option:
-                  type: integer
+                  type: string
                 nullifier:
                   type: string
+                rank:
+                  type: integer
   responses:
     '200':
       description: Success

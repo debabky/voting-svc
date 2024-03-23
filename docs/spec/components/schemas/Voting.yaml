@@ -10,12 +10,16 @@ allOf:
           - name
           - description
           - created_at
+          - active_until
         properties:
           name:
             type: string
           description:
             type: string
           created_at:
+            type: string
+            format: time.Time
+          active_until:
             type: string
             format: time.Time
       relationships:

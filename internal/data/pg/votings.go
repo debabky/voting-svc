@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"database/sql"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/debabky/voting-svc/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
@@ -29,6 +30,20 @@ type votingsQ struct {
 
 func (q *votingsQ) New() data.VotingsQ {
 	return NewVotingsQ(q.db.Clone())
+}
+
+func (q *votingsQ) FilterBy(column string, value any) data.VotingsQ {
+	q.sql = q.sql.Where(sq.Eq{column: value})
+	return q
+}
+
+func (q *votingsQ) Get() (*data.Voting, error) {
+	var result data.Voting
+	err := q.db.Get(&result, q.sql)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	return &result, err
 }
 
 func (q *votingsQ) Select() ([]data.Voting, error) {
