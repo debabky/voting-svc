@@ -2,12 +2,13 @@ package jwt
 
 import (
 	"fmt"
-	"github.com/debabky/voting-svc/internal/config"
-	"github.com/golang-jwt/jwt/v5"
-	"gitlab.com/distributed_lab/logan/v3/errors"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/debabky/voting-svc/internal/config"
+	"github.com/golang-jwt/jwt/v5"
+	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
 const (

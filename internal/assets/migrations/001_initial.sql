@@ -4,6 +4,7 @@ create table votings(
     id           uuid                     primary key default gen_random_uuid(),
     name         text                        not null,
     description  text                        not null,
+    voting_type  integer                     not null,
     created_at   timestamp without time zone not null default now(),
     active_until timestamp without time zone not null
 );
@@ -31,6 +32,7 @@ create table votes(
     voting_id     uuid not null,
     voting_option text not null,
     nullifier     text not null,
+    rank          integer,
     primary key (voting_id, voting_option, nullifier)
 );
 

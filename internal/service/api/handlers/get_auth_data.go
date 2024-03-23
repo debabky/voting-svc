@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/debabky/voting-svc/internal/service/api/requests"
 	"github.com/debabky/voting-svc/internal/service/jwt"
 	"github.com/debabky/voting-svc/resources"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
-	"net/http"
 )
 
 func GetAuthData(w http.ResponseWriter, r *http.Request) {

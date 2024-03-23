@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/debabky/voting-svc/internal/data"
 	"github.com/debabky/voting-svc/internal/service/cookies"
 	"github.com/debabky/voting-svc/internal/service/jwt"
 	"gitlab.com/distributed_lab/logan/v3"
-	"net/http"
 )
 
 type ctxKey int

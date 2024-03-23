@@ -1,12 +1,14 @@
 package jwt
 
 import (
-	"github.com/golang-jwt/jwt/v5"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type TokenClaims struct {
-	VotingID  string
+	VotingID  uuid.UUID
 	Nullifier string
 }
 
@@ -55,7 +57,7 @@ func (r *RawJWT) SetExpirationTimestamp(expiration time.Duration) *RawJWT {
 
 // Getters
 
-func (r *RawJWT) VotingID() (str string, ok bool) {
+func (r *RawJWT) VotingID() (id uuid.UUID, ok bool) {
 	var (
 		val interface{}
 	)
@@ -64,11 +66,11 @@ func (r *RawJWT) VotingID() (str string, ok bool) {
 		return
 	}
 
-	if str, ok = val.(string); !ok {
+	if id, ok = val.(uuid.UUID); !ok {
 		return
 	}
 
-	return str, ok
+	return id, ok
 }
 
 func (r *RawJWT) Nullifier() (str string, ok bool) {

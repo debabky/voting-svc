@@ -1,11 +1,12 @@
 package requests
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 	"gitlab.com/distributed_lab/urlval"
-	"net/http"
 )
 
 type GetVotingRequest struct {

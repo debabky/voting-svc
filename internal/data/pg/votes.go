@@ -53,3 +53,9 @@ func (q *votesQ) Count() (int64, error) {
 	}
 	return result[0], nil
 }
+
+func (q *votesQ) Select() ([]data.Vote, error) {
+	var result []data.Vote
+	err := q.db.Select(&result, q.sql)
+	return result, err
+}

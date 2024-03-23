@@ -1,10 +1,11 @@
 package requests
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"gitlab.com/distributed_lab/logan/v3/errors"
-	"net/http"
 )
 
 type GetAuthDataRequest struct {

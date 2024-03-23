@@ -2,8 +2,9 @@ package requests
 
 import (
 	"encoding/json"
-	"gitlab.com/distributed_lab/logan/v3/errors"
 	"net/http"
+
+	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
 type Vote struct {

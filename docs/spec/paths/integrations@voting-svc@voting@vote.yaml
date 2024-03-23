@@ -12,14 +12,14 @@ post:
             - data
           properties:
             data:
-              type: object # TODO array for ranked votings
+              type: object
               required:
-                - voting_option
+                - votes
               properties:
-                voting_option:
-                  type: string
-                rank:
-                  type: integer
+                votes:
+                  type: array
+                  items:
+                    $ref: '/components/schemas/Vote'
   responses:
     '200':
       description: Success

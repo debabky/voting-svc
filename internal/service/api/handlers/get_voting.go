@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"fmt"
+	"net/http"
+
+	"github.com/debabky/voting-svc/internal/data"
 	"github.com/debabky/voting-svc/internal/service/api/requests"
 	"github.com/debabky/voting-svc/resources"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
-	"net/http"
 )
 
 func GetVoting(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +58,30 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, option := range options {
+			votes, err := MasterQ(r).VotesQ().New().
+				FilterBy("voting_id", option.VotingID).
+				FilterBy("voting_option", option.Name).
+				Select()
+			if err != nil {
+				Log(r).WithError(err).Error("failed to get option votes")
+				return
+			}
+
+			var ( // different vars are used for different voting types
+				points   *int64
+				votesNum *int64
+			)
+
+			switch voting.Type {
+			case data.RankedVoting:
+				res := calculateRankedVotingOptionPoints(int64(len(options)), votes)
+				points = &res
+			default:
+				Log(r).Error(fmt.Sprintf("%d is not a valid voting type", voting.Type))
+				ape.RenderErr(w, problems.InternalError())
+				return
+			}
+
 			included.Add(&resources.VotingOption{
 				Key: resources.Key{
 					ID:   option.Name,
@@ -64,6 +91,8 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 					Name:        option.Name,
 					VotingId:    voting.ID,
 					Description: option.Description,
+					Points:      points,
+					Votes:       votesNum,
 				},
 			})
 		}
@@ -72,4 +101,12 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ape.Render(w, response)
+}
+
+func calculateRankedVotingOptionPoints(optionsAmount int64, votes []data.Vote) int64 {
+	var points int64
+	for _, vote := range votes {
+		points += optionsAmount - *vote.Rank
+	}
+	return points
 }

@@ -17,3 +17,9 @@ allOf:
             type: string
           description:
             type: string
+          votes:
+            type: integer
+            format: int64
+          points:
+            type: integer
+            format: int64

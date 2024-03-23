@@ -1,9 +1,9 @@
 package cookies
 
 import (
-	"github.com/debabky/voting-svc/internal/config"
 	"net/http"
 
+	"github.com/debabky/voting-svc/internal/config"
 	"github.com/debabky/voting-svc/internal/service/jwt"
 )
 
