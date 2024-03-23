@@ -15,6 +15,12 @@ create table voting_options(
     primary key (name, voting_id)
 );
 
+create table verification_requests(
+    id        uuid not null primary key,
+    voting_id uuid not null,
+    nullifier text not null
+);
+
 create table registrations(
     voting_id uuid not null,
     nullifier text not null,

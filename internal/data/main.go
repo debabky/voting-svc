@@ -7,6 +7,7 @@ type MasterQ interface {
 	VotingOptionsQ() VotingOptionsQ
 	RegistrationsQ() RegistrationsQ
 	VotesQ() VotesQ
+	VerificationRequestsQ() VerificationRequestsQ
 
 	Transaction(fn func(db MasterQ) error) error
 }

@@ -14,15 +14,9 @@ post:
             data:
               type: object # TODO array for ranked votings
               required:
-                - voting_id
                 - voting_option
-                - nullifier
               properties:
-                voting_id:
-                  type: string
                 voting_option:
-                  type: string
-                nullifier:
                   type: string
                 rank:
                   type: integer

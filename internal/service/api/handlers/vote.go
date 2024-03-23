@@ -19,7 +19,7 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	voting, err := MasterQ(r).VotingsQ().New().
-		FilterBy("id", req.Data.VotingID).
+		FilterBy("id", TokenClaims(r).VotingID).
 		Get()
 	if err != nil {
 		Log(r).WithError(err).Error("failed to get voting")
@@ -43,8 +43,8 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	registration, err := MasterQ(r).RegistrationsQ().New().
-		FilterBy("voting_id", req.Data.VotingID).
-		FilterBy("nullifier", req.Data.Nullifier).
+		FilterBy("voting_id", TokenClaims(r).VotingID).
+		FilterBy("nullifier", TokenClaims(r).Nullifier).
 		Get()
 	if err != nil {
 		Log(r).WithError(err).Error("failed to get registration")
@@ -57,8 +57,8 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	votesCount, err := MasterQ(r).VotesQ().New().
-		FilterBy("voting_id", req.Data.VotingID).
-		FilterBy("nullifier", req.Data.Nullifier).
+		FilterBy("voting_id", TokenClaims(r).VotingID).
+		FilterBy("nullifier", TokenClaims(r).Nullifier).
 		Count()
 	if err != nil {
 		Log(r).WithError(err).Error("failed to get votes")
@@ -70,11 +70,12 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO validate rank
 	for _, vote := range req.Data.Votes {
 		if err := MasterQ(r).VotesQ().Insert(data.Vote{
-			VotingID:     req.Data.VotingID,
+			//VotingID:     req.Data.VotingID, // FIXME
 			VotingOption: vote.VotingOption,
-			Nullifier:    req.Data.Nullifier,
+			Nullifier:    TokenClaims(r).Nullifier,
 			Rank:         vote.Rank,
 		}); err != nil {
 			Log(r).WithError(err).Error("failed to insert vote to the database")

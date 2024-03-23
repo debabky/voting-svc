@@ -8,6 +8,7 @@ type ResourceType string
 
 // List of ResourceType
 const (
+	TOKEN          ResourceType = "token"
 	VOTINGS        ResourceType = "votings"
 	VOTING_OPTIONS ResourceType = "voting_options"
 )

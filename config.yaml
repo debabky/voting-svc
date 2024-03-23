@@ -1,3 +1,8 @@
+jwt:
+  secret_key: key
+  access_expiration_time: 12h
+  refresh_expiration_time: 24h
+
 log:
   level: debug
   disable_sentry: true

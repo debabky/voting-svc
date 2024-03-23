@@ -40,3 +40,7 @@ func (m *masterQ) RegistrationsQ() data.RegistrationsQ {
 func (m *masterQ) VotesQ() data.VotesQ {
 	return NewVotesQ(m.db)
 }
+
+func (m *masterQ) VerificationRequestsQ() data.VerificationRequestsQ {
+	return NewVerificationRequestsQ(m.db)
+}

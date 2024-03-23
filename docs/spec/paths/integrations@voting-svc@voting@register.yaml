@@ -14,11 +14,12 @@ post:
             data:
               type: object
               required:
-                - id
+                - verification_request_id
                 - zkproof
               properties:
-                id:
+                verification_request_id:
                   type: string
+                  format: uuid.UUID
                 zkproof:
                   type: object
                   required:

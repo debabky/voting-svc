@@ -2,7 +2,6 @@ package requests
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 	"net/http"
 )
@@ -13,9 +12,7 @@ type Vote struct {
 }
 
 type VoteRequestData struct {
-	VotingID  uuid.UUID `json:"voting_id"`
-	Nullifier string    `json:"nullifier"`
-	Votes     []Vote    `json:"votes"`
+	Votes []Vote `json:"votes"`
 }
 
 type VoteRequest struct {
