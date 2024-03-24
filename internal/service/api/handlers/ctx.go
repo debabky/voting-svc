@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"context"
+	"github.com/debabky/voting-svc/internal/config"
+	"github.com/debabky/voting-svc/internal/contracts"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"net/http"
 
 	"github.com/debabky/voting-svc/internal/data"
@@ -18,6 +21,9 @@ const (
 	jwtIssuerCtxKey
 	tokenClaimsCtxKey
 	cookiesCtxKey
+	networkConfigCtxKey
+	registrationContractCtxKey
+	ethClientCtxKey
 )
 
 func CtxLog(entry *logan.Entry) func(context.Context) context.Context {
@@ -56,6 +62,16 @@ func CtxTokenClaims(claims *jwt.TokenClaims) func(context.Context) context.Conte
 	}
 }
 
+func CtxNetworkConfig(cfg *config.NetworkConfig) func(context.Context) context.Context {
+	return func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, networkConfigCtxKey, cfg)
+	}
+}
+
+func NetworkConfig(r *http.Request) *config.NetworkConfig {
+	return r.Context().Value(networkConfigCtxKey).(*config.NetworkConfig)
+}
+
 func TokenClaims(r *http.Request) *jwt.TokenClaims {
 	return r.Context().Value(tokenClaimsCtxKey).(*jwt.TokenClaims)
 }
@@ -68,4 +84,24 @@ func CtxCookies(cookies *cookies.Cookies) func(context.Context) context.Context 
 
 func Cookies(r *http.Request) *cookies.Cookies {
 	return r.Context().Value(cookiesCtxKey).(*cookies.Cookies)
+}
+
+func CtxRegistrationContract(contract *contracts.Registration) func(context.Context) context.Context {
+	return func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, registrationContractCtxKey, contract)
+	}
+}
+
+func RegistrationContract(r *http.Request) *contracts.Registration {
+	return r.Context().Value(registrationContractCtxKey).(*contracts.Registration)
+}
+
+func CtxEthClient(client *ethclient.Client) func(context.Context) context.Context {
+	return func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, ethClientCtxKey, client)
+	}
+}
+
+func EthClient(r *http.Request) *ethclient.Client {
+	return r.Context().Value(ethClientCtxKey).(*ethclient.Client)
 }

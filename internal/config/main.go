@@ -16,6 +16,7 @@ type Config interface {
 
 	JWTConfiger
 	CookiesConfiger
+	NetworkConfiger
 }
 
 type config struct {
@@ -27,6 +28,7 @@ type config struct {
 
 	JWTConfiger
 	CookiesConfiger
+	NetworkConfiger
 }
 
 func New(getter kv.Getter) Config {
@@ -38,5 +40,6 @@ func New(getter kv.Getter) Config {
 		Logger:          comfig.NewLogger(getter, comfig.LoggerOpts{}),
 		JWTConfiger:     NewJWTConfiger(getter),
 		CookiesConfiger: NewCookiesConfiger(getter),
+		NetworkConfiger: NewNetworkConfiger(getter),
 	}
 }

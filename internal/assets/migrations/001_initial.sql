@@ -10,10 +10,11 @@ create table votings(
 );
 
 create table voting_options(
+    id           integer not null,
     name         text    not null,
     voting_id    uuid    not null,
     description  text,
-    primary key (name, voting_id)
+    primary key (id, name, voting_id)
 );
 
 create table verification_requests(

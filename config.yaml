@@ -1,3 +1,12 @@
+network:
+  rpc:
+  voting_address:
+  private_key:
+
+cookies:
+  domain: "abc"
+  secure: true
+
 jwt:
   secret_key: key
   access_expiration_time: 12h

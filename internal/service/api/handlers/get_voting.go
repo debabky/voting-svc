@@ -90,6 +90,7 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 					Type: resources.VOTING_OPTIONS,
 				},
 				Attributes: resources.VotingOptionAttributes{
+					Id:          option.ID,
 					Name:        option.Name,
 					VotingId:    voting.ID,
 					Description: option.Description,

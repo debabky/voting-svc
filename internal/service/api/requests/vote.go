@@ -12,12 +12,16 @@ type Vote struct {
 	Rank         *int64 `json:"rank"`
 }
 
-type VoteRequestData struct {
+type VoteRequestVotes struct {
 	Votes []Vote `json:"votes"`
 }
 
+type VoteRequestAttributes struct {
+	Attributes VoteRequestVotes `json:"attributes"`
+}
+
 type VoteRequest struct {
-	Data VoteRequestData `json:"data"`
+	Data VoteRequestAttributes `json:"data"`
 }
 
 func NewVoteRequest(r *http.Request) (VoteRequest, error) {

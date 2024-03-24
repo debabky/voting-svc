@@ -29,17 +29,20 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if voting == nil {
+		Log(r).Error("voting not found")
 		ape.RenderErr(w, problems.BadRequest(errors.New("voting not found"))...)
 		return
 	}
 
 	if voting.ActiveUntil.Before(time.Now().UTC()) {
+		Log(r).Error("voting ended")
 		ape.RenderErr(w, problems.BadRequest(errors.New("voting ended"))...)
 		return
 	}
 
 	// if there are no votes or multiple votes for non-ranked voting
-	if len(req.Data.Votes) < 1 || (voting.Type != data.RankedVoting && len(req.Data.Votes) != 1) {
+	if len(req.Data.Attributes.Votes) < 1 || (voting.Type != data.RankedVoting && len(req.Data.Attributes.Votes) != 1) {
+		Log(r).Error("insufficient number of votes")
 		ape.RenderErr(w, problems.BadRequest(errors.New("insufficient number of votes"))...)
 		return
 	}
@@ -54,6 +57,7 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if registration == nil {
+		Log(r).Error("registration not found")
 		ape.RenderErr(w, problems.BadRequest(errors.New("registration not found"))...)
 		return
 	}
@@ -68,13 +72,14 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if votesCount > 0 {
+		Log(r).Error("nullifier has already been used")
 		ape.RenderErr(w, problems.BadRequest(errors.New("nullifier has already been used"))...)
 		return
 	}
 
 	switch voting.Type {
 	case data.RankedVoting:
-		if err := addRankedVotes(r, voting, req.Data.Votes); err != nil {
+		if err := addRankedVotes(r, voting, req.Data.Attributes.Votes); err != nil {
 			Log(r).WithError(err).Error("failed to add ranked votes")
 			ape.RenderErr(w, problems.InternalError())
 			return

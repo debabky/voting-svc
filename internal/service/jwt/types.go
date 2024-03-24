@@ -60,13 +60,15 @@ func (r *RawJWT) SetExpirationTimestamp(expiration time.Duration) *RawJWT {
 func (r *RawJWT) VotingID() (id uuid.UUID, ok bool) {
 	var (
 		val interface{}
+		err error
 	)
 
 	if val, ok = r.claims["voting_id"]; !ok {
 		return
 	}
 
-	if id, ok = val.(uuid.UUID); !ok {
+	id, err = uuid.Parse(val.(string))
+	if err != nil {
 		return
 	}
 

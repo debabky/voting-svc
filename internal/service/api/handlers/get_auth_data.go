@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/debabky/voting-svc/internal/data"
 	"net/http"
 
 	"github.com/debabky/voting-svc/internal/service/api/requests"
@@ -47,6 +48,27 @@ func GetAuthData(w http.ResponseWriter, r *http.Request) {
 		Log(r).WithError(err).Error("failed to issuer JWT token")
 		ape.RenderErr(w, problems.InternalError())
 		return
+	}
+
+	registration, err := MasterQ(r).RegistrationsQ().New().
+		FilterBy("voting_id", verificationRequest.VotingID).
+		FilterBy("nullifier", verificationRequest.Nullifier).
+		Get()
+	if err != nil {
+		Log(r).WithError(err).Error("failed to get registration")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+
+	if registration == nil {
+		if err := MasterQ(r).RegistrationsQ().Insert(data.Registration{
+			VotingID:  verificationRequest.VotingID,
+			Nullifier: verificationRequest.Nullifier,
+		}); err != nil {
+			Log(r).WithError(err).Error("failed to insert registration")
+			ape.RenderErr(w, problems.InternalError())
+			return
+		}
 	}
 
 	resp := resources.TokenResponse{
