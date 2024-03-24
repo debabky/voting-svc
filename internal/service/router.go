@@ -6,6 +6,7 @@ import (
 	"github.com/debabky/voting-svc/internal/service/cookies"
 	"github.com/debabky/voting-svc/internal/service/jwt"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 )
@@ -19,6 +20,13 @@ func (s *service) router() chi.Router {
 	}
 
 	r.Use(
+		cors.Handler(cors.Options{
+			AllowedOrigins:   []string{"*"},
+			AllowedMethods:   []string{"GET", "POST"},
+			AllowedHeaders:   []string{"Content-Type", "Authorization"},
+			AllowCredentials: false,
+			MaxAge:           300,
+		}),
 		ape.RecoverMiddleware(s.log),
 		ape.LoganMiddleware(s.log),
 		ape.CtxMiddleware(
