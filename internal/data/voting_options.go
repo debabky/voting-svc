@@ -1,9 +1,5 @@
 package data
 
-import (
-	"github.com/google/uuid"
-)
-
 type VotingOptionsQ interface {
 	New() VotingOptionsQ
 	FilterBy(column string, value any) VotingOptionsQ
@@ -11,8 +7,8 @@ type VotingOptionsQ interface {
 }
 
 type VotingOption struct {
-	ID          int64     `db:"id" structs:"id"`
-	Name        string    `db:"name" structs:"name"`
-	VotingID    uuid.UUID `db:"voting_id" structs:"voting_id"`
-	Description *string   `db:"description" structs:"description"`
+	ID          int64   `db:"id" structs:"id"`
+	Name        string  `db:"name" structs:"name"`
+	VotingID    string  `db:"voting_id" structs:"voting_id"`
+	Description *string `db:"description" structs:"description"`
 }

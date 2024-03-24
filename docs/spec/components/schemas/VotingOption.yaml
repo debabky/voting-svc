@@ -16,7 +16,6 @@ allOf:
             format: int64
           voting_id:
             type: string
-            format: uuid.UUID
           name:
             type: string
           description:

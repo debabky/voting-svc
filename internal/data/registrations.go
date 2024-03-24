@@ -1,9 +1,5 @@
 package data
 
-import (
-	"github.com/google/uuid"
-)
-
 type RegistrationsQ interface {
 	New() RegistrationsQ
 	Insert(value Registration) error
@@ -12,6 +8,6 @@ type RegistrationsQ interface {
 }
 
 type Registration struct {
-	VotingID  uuid.UUID `db:"voting_id" structs:"voting_id"`
-	Nullifier string    `db:"nullifier" structs:"nullifier"`
+	VotingID  string `db:"voting_id" structs:"voting_id"`
+	Nullifier string `db:"nullifier" structs:"nullifier"`
 }

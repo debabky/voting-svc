@@ -1,7 +1,6 @@
 package data
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
@@ -13,7 +12,7 @@ type VotingsQ interface {
 }
 
 type Voting struct {
-	ID          uuid.UUID  `db:"id" structs:"-"`
+	ID          string     `db:"id" structs:"-"`
 	Name        string     `db:"name" structs:"name"`
 	Description string     `db:"description" structs:"description"`
 	Type        VotingType `db:"voting_type" structs:"voting_type"`

@@ -26,18 +26,19 @@ func (s *service) router() chi.Router {
 		panic(errors.Wrap(err, "failed to dial connect"))
 	}
 
-	registrationContract, err := contracts.NewRegistration(s.cfg.NetworkConfig().VotingAddress, ethClient)
+	registrationContract, err := contracts.NewVoting(s.cfg.NetworkConfig().VotingAddress, ethClient)
 	if err != nil {
 		panic(errors.Wrap(err, "failed to init new registration contract"))
 	}
 
 	r.Use(
 		cors.Handler(cors.Options{
-			AllowedOrigins:   []string{"*"},
-			AllowedMethods:   []string{"GET", "POST"},
-			AllowedHeaders:   []string{"Content-Type", "Authorization"},
-			AllowCredentials: false,
-			MaxAge:           300,
+			AllowedOrigins:     []string{"*"},
+			AllowedMethods:     []string{"GET", "POST"},
+			AllowedHeaders:     []string{"Content-Type", "Authorization"},
+			AllowCredentials:   true,
+			MaxAge:             300,
+			OptionsPassthrough: true,
 		}),
 		ape.RecoverMiddleware(s.log),
 		ape.LoganMiddleware(s.log),
@@ -48,15 +49,14 @@ func (s *service) router() chi.Router {
 			handlers.CtxCookies(cookies.NewCookies(s.cfg.CookiesConfig())),
 			handlers.CtxNetworkConfig(s.cfg.NetworkConfig()),
 			handlers.CtxEthClient(ethClient),
-			handlers.CtxRegistrationContract(registrationContract),
+			handlers.CtxVotingContract(registrationContract),
 		),
 	)
 	r.Route("/integrations/voting-svc", func(r chi.Router) {
 		r.Route("/voting", func(r chi.Router) {
 			r.With(handlers.AuthMiddleware(jwtIssuer, s.log, jwt.AccessTokenType)).Get("/{id}", handlers.GetVoting)
 			r.Get("/list", handlers.GetVotings)
-			r.Post("/register", handlers.Register)
-			r.With(handlers.AuthMiddleware(jwtIssuer, s.log, jwt.AccessTokenType)).Post("/vote", handlers.Vote)
+			r.Post("/vote", handlers.Vote)
 		})
 		r.Get("/auth-data/{id}", handlers.GetAuthData)
 	})

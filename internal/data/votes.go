@@ -1,9 +1,5 @@
 package data
 
-import (
-	"github.com/google/uuid"
-)
-
 type VotesQ interface {
 	New() VotesQ
 	Insert(vote Vote) error
@@ -13,8 +9,8 @@ type VotesQ interface {
 }
 
 type Vote struct {
-	VotingID     uuid.UUID `db:"voting_id" structs:"voting_id"`
-	VotingOption string    `db:"voting_option" structs:"voting_option"`
-	Rank         *int64    `db:"rank" structs:"rank"`
-	Nullifier    string    `db:"nullifier" structs:"nullifier"`
+	VotingID     string `db:"voting_id" structs:"voting_id"`
+	VotingOption string `db:"voting_option" structs:"voting_option"`
+	Rank         *int64 `db:"rank" structs:"rank"`
+	Nullifier    string `db:"nullifier" structs:"nullifier"`
 }
