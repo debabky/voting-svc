@@ -33,7 +33,7 @@ func GetAuthData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	access, err := JWTIssuer(r).IssueJWT(
-		verificationRequest.VotingID.String(), verificationRequest.Nullifier, jwt.AccessTokenType,
+		verificationRequest.VotingID, verificationRequest.Nullifier, jwt.AccessTokenType,
 	)
 	if err != nil {
 		Log(r).WithError(err).Error("failed to issuer JWT token")
@@ -42,7 +42,7 @@ func GetAuthData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	refresh, err := JWTIssuer(r).IssueJWT(
-		verificationRequest.VotingID.String(), verificationRequest.Nullifier, jwt.RefreshTokenType,
+		verificationRequest.VotingID, verificationRequest.Nullifier, jwt.RefreshTokenType,
 	)
 	if err != nil {
 		Log(r).WithError(err).Error("failed to issuer JWT token")

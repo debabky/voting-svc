@@ -29,7 +29,7 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pubKey, s, n, a, b, c, err := getRegistrationData(req)
+	nullififer, candidates, a, b, c, err := getVotingData(req)
 	if err != nil {
 		Log(r).WithError(err).Error("failed to get registration data")
 		ape.RenderErr(w, problems.InternalError())
@@ -39,8 +39,7 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 	NetworkConfig(r).LockNonce()
 	defer NetworkConfig(r).UnlockNonce()
 
-	// FIXME rework for voting contract
-	tx, err := RegistrationContract(r).Register(
+	tx, err := VotingContract(r).Vote(
 		&bind.TransactOpts{
 			NoSend: true,
 			From:   crypto.PubkeyToAddress(NetworkConfig(r).PrivateKey.PublicKey),
@@ -50,13 +49,13 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 				)
 			},
 		},
-		pubKey, s, n,
+		candidates,
 		contracts.VerifierHelperProofPoints{
 			A: a,
 			B: b,
 			C: c,
 		},
-		big.NewInt(req.Data.Timestamp),
+		nullififer,
 	)
 	if err != nil {
 		Log(r).WithError(err).Error("failed to check transaction validity")
@@ -66,12 +65,13 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 
 	if err := MasterQ(r).Transaction(func(db data.MasterQ) error {
 		if err := db.RegistrationsQ().Insert(data.Registration{
-			// TODO
+			VotingID:  NetworkConfig(r).VotingAddress.String(),
+			Nullifier: nullififer.String(),
 		}); err != nil {
 			return errors.Wrap(err, "failed to insert registration")
 		}
 
-		tx, err = RegistrationContract(r).Register(
+		tx, err = VotingContract(r).Vote(
 			&bind.TransactOpts{
 				From:  crypto.PubkeyToAddress(NetworkConfig(r).PrivateKey.PublicKey),
 				Nonce: new(big.Int).SetUint64(NetworkConfig(r).Nonce()),
@@ -81,13 +81,13 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 					)
 				},
 			},
-			pubKey, s, n,
+			candidates,
 			contracts.VerifierHelperProofPoints{
 				A: a,
 				B: b,
 				C: c,
 			},
-			big.NewInt(req.Data.Timestamp),
+			nullififer,
 		)
 		if err != nil {
 			if strings.Contains(err.Error(), "nonce") {
@@ -96,7 +96,7 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 					return errors.Wrap(err, "failed to reset nonce")
 				}
 
-				tx, err = RegistrationContract(r).Register(
+				tx, err = VotingContract(r).Vote(
 					&bind.TransactOpts{
 						From:  crypto.PubkeyToAddress(NetworkConfig(r).PrivateKey.PublicKey),
 						Nonce: new(big.Int).SetUint64(NetworkConfig(r).Nonce()),
@@ -106,13 +106,13 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 							)
 						},
 					},
-					pubKey, s, n,
+					candidates,
 					contracts.VerifierHelperProofPoints{
 						A: a,
 						B: b,
 						C: c,
 					},
-					big.NewInt(req.Data.Timestamp),
+					nullififer,
 				)
 				if err != nil {
 					ape.RenderErr(w, problems.InternalError())
@@ -142,32 +142,25 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func getRegistrationData(req requests.VoteRequest) (
-	[32]byte, []byte, []byte, [2]*big.Int, [2][2]*big.Int, [2]*big.Int, error,
+func getVotingData(req requests.VoteRequest) (
+	*big.Int, [5]*big.Int, [2]*big.Int, [2][2]*big.Int, [2]*big.Int, error,
 ) {
-	pubKey, err := hex.DecodeString(req.Data.InternalPublicKey)
+	nullifier, err := hex.DecodeString(req.Data.Nullifier)
 	if err != nil {
-		return [32]byte{}, nil, nil, [2]*big.Int{}, [2][2]*big.Int{}, [2]*big.Int{}, errors.Wrap(err, "failed to decode hex")
-	}
-	pubKeyArr := [32]byte{}
-	copy(pubKeyArr[:], pubKey)
-
-	s, err := hex.DecodeString(req.Data.Signature.S)
-	if err != nil {
-		return [32]byte{}, nil, nil, [2]*big.Int{}, [2][2]*big.Int{}, [2]*big.Int{}, errors.Wrap(err, "failed to decode hex")
-	}
-
-	n, err := hex.DecodeString(req.Data.Signature.N)
-	if err != nil {
-		return [32]byte{}, nil, nil, [2]*big.Int{}, [2][2]*big.Int{}, [2]*big.Int{}, errors.Wrap(err, "failed to decode hex")
+		return nil, [5]*big.Int{}, [2]*big.Int{}, [2][2]*big.Int{}, [2]*big.Int{}, errors.Wrap(err, "failed to decode hex")
 	}
 
 	a, b, c, err := getProofPoints(req)
 	if err != nil {
-		return [32]byte{}, nil, nil, [2]*big.Int{}, [2][2]*big.Int{}, [2]*big.Int{}, errors.Wrap(err, "failed to get proof points")
+		return nil, [5]*big.Int{}, [2]*big.Int{}, [2][2]*big.Int{}, [2]*big.Int{}, errors.Wrap(err, "failed to get proof points")
 	}
 
-	return pubKeyArr, s, n, a, b, c, nil
+	candidates := [5]*big.Int{}
+	for i, candidate := range req.Data.Candidates {
+		candidates[i] = big.NewInt(candidate)
+	}
+
+	return new(big.Int).SetBytes(nullifier), candidates, a, b, c, nil
 }
 
 func getProofPoints(req requests.VoteRequest) ([2]*big.Int, [2][2]*big.Int, [2]*big.Int, error) {
@@ -199,9 +192,9 @@ func getProofPoints(req requests.VoteRequest) ([2]*big.Int, [2][2]*big.Int, [2]*
 	return resA, resB, resC, nil
 }
 
-func stringsToArrayBigInt(publicSignals []string) ([]*big.Int, error) {
-	p := make([]*big.Int, 0, len(publicSignals))
-	for _, s := range publicSignals {
+func stringsToArrayBigInt(strs []string) ([]*big.Int, error) {
+	p := make([]*big.Int, 0, len(strs))
+	for _, s := range strs {
 		sb, err := stringToBigInt(s)
 		if err != nil {
 			return nil, err

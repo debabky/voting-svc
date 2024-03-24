@@ -36,7 +36,7 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 	response := resources.VotingResponse{
 		Data: resources.Voting{
 			Key: resources.Key{
-				ID:   voting.ID.String(),
+				ID:   voting.ID,
 				Type: resources.VOTINGS,
 			},
 			Attributes: resources.VotingAttributes{

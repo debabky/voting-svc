@@ -8,13 +8,9 @@ import (
 )
 
 type VoteRequestData struct {
-	InternalPublicKey string `json:"internal_public_key"`
-	Signature         struct {
-		S string `json:"s"`
-		N string `json:"n"`
-	} `json:"signature"`
-	Proof     snark.ZKProof `json:"proof"`
-	Timestamp int64         `json:"timestamp"`
+	Candidates []int64       `json:"candidates"`
+	Proof      snark.ZKProof `json:"proof"`
+	Nullifier  string        `json:"nullifier"`
 }
 
 type VoteRequest struct {

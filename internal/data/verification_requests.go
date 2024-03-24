@@ -13,6 +13,6 @@ type VerificationRequestsQ interface {
 
 type VerificationRequest struct {
 	ID        uuid.UUID `db:"id" structs:"id"`
-	VotingID  uuid.UUID `db:"voting_id" structs:"voting_id"`
+	VotingID  string    `db:"voting_id" structs:"voting_id"`
 	Nullifier string    `db:"nullifier" structs:"nullifier"`
 }

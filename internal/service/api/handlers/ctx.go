@@ -22,7 +22,7 @@ const (
 	tokenClaimsCtxKey
 	cookiesCtxKey
 	networkConfigCtxKey
-	registrationContractCtxKey
+	votingContractCtxKey
 	ethClientCtxKey
 )
 
@@ -86,14 +86,14 @@ func Cookies(r *http.Request) *cookies.Cookies {
 	return r.Context().Value(cookiesCtxKey).(*cookies.Cookies)
 }
 
-func CtxRegistrationContract(contract *contracts.Registration) func(context.Context) context.Context {
+func CtxVotingContract(contract *contracts.Voting) func(context.Context) context.Context {
 	return func(ctx context.Context) context.Context {
-		return context.WithValue(ctx, registrationContractCtxKey, contract)
+		return context.WithValue(ctx, votingContractCtxKey, contract)
 	}
 }
 
-func RegistrationContract(r *http.Request) *contracts.Registration {
-	return r.Context().Value(registrationContractCtxKey).(*contracts.Registration)
+func VotingContract(r *http.Request) *contracts.Voting {
+	return r.Context().Value(votingContractCtxKey).(*contracts.Voting)
 }
 
 func CtxEthClient(client *ethclient.Client) func(context.Context) context.Context {

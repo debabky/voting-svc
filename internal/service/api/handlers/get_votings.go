@@ -20,7 +20,7 @@ func GetVotings(w http.ResponseWriter, r *http.Request) {
 	for i, voting := range votings {
 		responseData[i] = resources.Voting{
 			Key: resources.Key{
-				ID:   voting.ID.String(),
+				ID:   voting.ID,
 				Type: resources.VOTINGS,
 			},
 			Attributes: resources.VotingAttributes{

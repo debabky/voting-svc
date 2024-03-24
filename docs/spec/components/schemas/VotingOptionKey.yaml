@@ -5,7 +5,6 @@ required:
 properties:
   id:
     type: string
-    format: uuid.UUID
   type:
     type: string
     enum:
