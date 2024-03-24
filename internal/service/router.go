@@ -55,8 +55,7 @@ func (s *service) router() chi.Router {
 		r.Route("/voting", func(r chi.Router) {
 			r.With(handlers.AuthMiddleware(jwtIssuer, s.log, jwt.AccessTokenType)).Get("/{id}", handlers.GetVoting)
 			r.Get("/list", handlers.GetVotings)
-			r.Post("/register", handlers.Register)
-			r.With(handlers.AuthMiddleware(jwtIssuer, s.log, jwt.AccessTokenType)).Post("/vote", handlers.Vote)
+			r.Post("/vote", handlers.Vote)
 		})
 		r.Get("/auth-data/{id}", handlers.GetAuthData)
 	})

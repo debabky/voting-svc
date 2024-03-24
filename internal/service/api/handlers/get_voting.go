@@ -120,6 +120,8 @@ func GetVoting(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 		response.Data.Attributes.Votes = &votesToAdd
+
+		// TODO check on-chain status via nullifier
 	}
 
 	ape.Render(w, response)

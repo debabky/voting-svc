@@ -2,26 +2,23 @@ package requests
 
 import (
 	"encoding/json"
-	"net/http"
-
+	snark "github.com/iden3/go-rapidsnark/types"
 	"gitlab.com/distributed_lab/logan/v3/errors"
+	"net/http"
 )
 
-type Vote struct {
-	VotingOption string `json:"voting_option"`
-	Rank         *int64 `json:"rank"`
-}
-
-type VoteRequestVotes struct {
-	Votes []Vote `json:"votes"`
-}
-
-type VoteRequestAttributes struct {
-	Attributes VoteRequestVotes `json:"attributes"`
+type VoteRequestData struct {
+	InternalPublicKey string `json:"internal_public_key"`
+	Signature         struct {
+		S string `json:"s"`
+		N string `json:"n"`
+	} `json:"signature"`
+	Proof     snark.ZKProof `json:"proof"`
+	Timestamp int64         `json:"timestamp"`
 }
 
 type VoteRequest struct {
-	Data VoteRequestAttributes `json:"data"`
+	Data VoteRequestData `json:"data"`
 }
 
 func NewVoteRequest(r *http.Request) (VoteRequest, error) {
