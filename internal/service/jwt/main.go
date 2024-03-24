@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"strings"
@@ -17,14 +18,19 @@ const (
 )
 
 type JWTIssuer struct {
-	key             string
+	key             []byte
 	accessDuration  time.Duration
 	refreshDuration time.Duration
 }
 
 func NewJWTIssuer(cfg *config.JWTConfig) *JWTIssuer {
+	key, err := hex.DecodeString(cfg.SecretKey)
+	if err != nil {
+		return nil
+	}
+
 	return &JWTIssuer{
-		key:             cfg.SecretKey,
+		key:             key,
 		accessDuration:  cfg.AccessExpirationTime,
 		refreshDuration: cfg.RefreshExpirationTime,
 	}

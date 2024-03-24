@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"sort"
 	"time"
 
 	"github.com/debabky/voting-svc/internal/data"
@@ -90,15 +89,8 @@ func Vote(w http.ResponseWriter, r *http.Request) {
 func addRankedVotes(r *http.Request, voting *data.Voting, votes []requests.Vote) error {
 	passedOptions := make([]string, 0)
 	for _, vote := range votes {
-		if vote.Rank == nil {
-			return errors.New("ranked vote do not contain rank")
-		}
 		passedOptions = append(passedOptions, vote.VotingOption)
 	}
-
-	sort.Slice(votes, func(i, j int) bool {
-		return *votes[i].Rank < *votes[j].Rank
-	})
 
 	options, err := MasterQ(r).VotingOptionsQ().
 		FilterBy("voting_id", voting.ID.String()).
@@ -115,32 +107,15 @@ func addRankedVotes(r *http.Request, voting *data.Voting, votes []requests.Vote)
 		return errors.New("votes number is not equal to options number")
 	}
 
-	optionsNumber := int64(len(options))
-	for i, vote := range votes {
-
-		points := optionsNumber - *vote.Rank
-
-		var nextPoints int64
-		if i+1 != len(votes) {
-			nextPoints = optionsNumber - *votes[i+1].Rank
-			if points-1 != nextPoints {
-				return errors.New("invalid vote rank")
-			}
-			continue
-		}
-
-		if points != nextPoints {
-			return errors.New("invalid vote rank")
-		}
-	}
-
 	if err := MasterQ(r).Transaction(func(db data.MasterQ) error {
-		for _, vote := range votes {
+		for i, passedOption := range passedOptions {
+			rank := int64(i + 1)
+
 			if err := db.VotesQ().Insert(data.Vote{
 				VotingID:     TokenClaims(r).VotingID,
-				VotingOption: vote.VotingOption,
+				VotingOption: passedOption,
 				Nullifier:    TokenClaims(r).Nullifier,
-				Rank:         vote.Rank,
+				Rank:         &rank,
 			}); err != nil {
 				return errors.Wrap(err, "failed to insert vote to the database")
 			}

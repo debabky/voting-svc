@@ -7,12 +7,16 @@ import (
 	"github.com/debabky/voting-svc/internal/service/jwt"
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/ape"
+	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
 func (s *service) router() chi.Router {
 	r := chi.NewRouter()
 
 	jwtIssuer := jwt.NewJWTIssuer(s.cfg.JWTConfig())
+	if jwtIssuer == nil {
+		panic(errors.New("failed to initialize JWT issuer"))
+	}
 
 	r.Use(
 		ape.RecoverMiddleware(s.log),
